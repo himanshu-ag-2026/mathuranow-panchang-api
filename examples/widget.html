@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MathuraNow widget example</title>
+</head>
+<body>
+  <h1>Today's Panchang and Rashifal</h1>
+
+  <!-- Panchang, English, light theme (default) -->
+  <div data-mathuranow-widget="panchang" data-lang="en"></div>
+
+  <!-- Rashifal with a 12-sign picker, Hindi, dark theme -->
+  <div data-mathuranow-widget="rashifal" data-lang="hi" data-theme="dark"></div>
+
+  <!-- Load once, anywhere on the page. The widget shows "Coming soon" while the day's entry is pending
+       and always shows a visible "by MathuraNow" credit link. Data licence: CC BY-NC 4.0. -->
+  <script src="https://mathuranow.in/api/v1/widget.js" async></script>
+</body>
+</html>

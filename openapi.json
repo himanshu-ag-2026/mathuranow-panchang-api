@@ -1,0 +1,647 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "MathuraNow Braj Panchang & Rashifal API",
+    "version": "1.0.0",
+    "summary": "Free daily Braj / Mathura Panchang and Rashifal as static JSON, in Hindi and English.",
+    "description": "Static JSON files, no key and no sign-up. The Panchang is entered each day by a named author on the MathuraNow team; the Rashifal is AI-assisted and human-reviewed. This is a Braj / Mathura-Vrindavan Panchang, not an all-India calculator. Data licence: CC BY-NC 4.0 (credit line required). Commercial use needs written permission. Docs: https://mathuranow.in/panchang-api/",
+    "termsOfService": "https://mathuranow.in/panchang-feed-usage-policy/",
+    "contact": {
+      "name": "MathuraNow",
+      "url": "https://mathuranow.in/panchang-api/",
+      "email": "editor@mathuranow.in"
+    },
+    "license": {
+      "name": "CC BY-NC 4.0",
+      "url": "https://creativecommons.org/licenses/by-nc/4.0/"
+    }
+  },
+  "externalDocs": {
+    "description": "Documentation",
+    "url": "https://mathuranow.in/panchang-api/"
+  },
+  "servers": [
+    {
+      "url": "https://mathuranow.in/api/v1",
+      "description": "Production (static files)"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Panchang"
+    },
+    {
+      "name": "Rashifal"
+    }
+  ],
+  "paths": {
+    "/panchang/today.{lang}.json": {
+      "get": {
+        "operationId": "panchangToday",
+        "summary": "Today's Panchang (IST)",
+        "description": "A fixed file that always describes the current IST day. Before the entry for the new day is submitted it holds a placeholder with status \"pending\" and data null; it never shows yesterday.",
+        "tags": [
+          "Panchang"
+        ],
+        "parameters": [
+          {
+            "name": "lang",
+            "in": "path",
+            "required": true,
+            "description": "Language of the file: English or Hindi.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "en",
+                "hi"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Today's file (status \"published\" or \"pending\").",
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "description": "Always \"*\": the file can be read from any web page.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "\"public, max-age=300\" for today files, \"public, max-age=3600\" for dated files.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PanchangFile"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/panchang/{date}.{lang}.json": {
+      "get": {
+        "operationId": "panchangByDate",
+        "summary": "Panchang for one date",
+        "description": "The dated file of a published entry. It changes only if the author edits that entry.",
+        "tags": [
+          "Panchang"
+        ],
+        "parameters": [
+          {
+            "name": "date",
+            "in": "path",
+            "required": true,
+            "description": "Calendar date (IST) as YYYY-MM-DD. A dated file exists only for dates that have a published entry.",
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "examples": [
+                "2026-10-14"
+              ]
+            }
+          },
+          {
+            "name": "lang",
+            "in": "path",
+            "required": true,
+            "description": "Language of the file: English or Hindi.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "en",
+                "hi"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The published entry for that date.",
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "description": "Always \"*\": the file can be read from any web page.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "\"public, max-age=300\" for today files, \"public, max-age=3600\" for dated files.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PanchangFile"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No entry has been published for that date (dated files only)."
+          }
+        }
+      }
+    },
+    "/rashifal/today.{lang}.json": {
+      "get": {
+        "operationId": "rashifalToday",
+        "summary": "Today's Rashifal (IST)",
+        "description": "A fixed file that always describes the current IST day. Before the entry for the new day is submitted it holds a placeholder with status \"pending\" and data null; it never shows yesterday.",
+        "tags": [
+          "Rashifal"
+        ],
+        "parameters": [
+          {
+            "name": "lang",
+            "in": "path",
+            "required": true,
+            "description": "Language of the file: English or Hindi.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "en",
+                "hi"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Today's file (status \"published\" or \"pending\").",
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "description": "Always \"*\": the file can be read from any web page.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "\"public, max-age=300\" for today files, \"public, max-age=3600\" for dated files.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RashifalFile"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rashifal/{date}.{lang}.json": {
+      "get": {
+        "operationId": "rashifalByDate",
+        "summary": "Rashifal for one date",
+        "description": "The dated file of a published entry. It changes only if the author edits that entry.",
+        "tags": [
+          "Rashifal"
+        ],
+        "parameters": [
+          {
+            "name": "date",
+            "in": "path",
+            "required": true,
+            "description": "Calendar date (IST) as YYYY-MM-DD. A dated file exists only for dates that have a published entry.",
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "examples": [
+                "2026-10-14"
+              ]
+            }
+          },
+          {
+            "name": "lang",
+            "in": "path",
+            "required": true,
+            "description": "Language of the file: English or Hindi.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "en",
+                "hi"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The published entry for that date.",
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "description": "Always \"*\": the file can be read from any web page.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "\"public, max-age=300\" for today files, \"public, max-age=3600\" for dated files.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RashifalFile"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No entry has been published for that date (dated files only)."
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Credit": {
+        "type": "object",
+        "description": "The named author of the entry. Never an e-mail address.",
+        "required": [
+          "name",
+          "photo_url",
+          "author_url"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "photo_url": {
+            "type": "string"
+          },
+          "author_url": {
+            "type": "string",
+            "format": "uri"
+          }
+        }
+      },
+      "PanchangData": {
+        "type": "object",
+        "properties": {
+          "fields": {
+            "type": "object",
+            "description": "The fixed Panchang fields. A field may be missing when the author left it empty.",
+            "properties": {
+              "vaar": {
+                "type": "string",
+                "description": "Weekday. Free text as entered by the author, in the language of the file."
+              },
+              "tithi": {
+                "type": "string",
+                "description": "Tithi, with end time. Free text as entered by the author, in the language of the file."
+              },
+              "nakshatra": {
+                "type": "string",
+                "description": "Nakshatra, with end time. Free text as entered by the author, in the language of the file."
+              },
+              "yoga": {
+                "type": "string",
+                "description": "Yoga, with end time. Free text as entered by the author, in the language of the file."
+              },
+              "karana": {
+                "type": "string",
+                "description": "Karana, with end time. Free text as entered by the author, in the language of the file."
+              },
+              "chandra_rashi": {
+                "type": "string",
+                "description": "Moon sign. Free text as entered by the author, in the language of the file."
+              },
+              "muhurat": {
+                "type": "string",
+                "description": "Auspicious periods. Free text as entered by the author, in the language of the file."
+              },
+              "rahu_kaal": {
+                "type": "string",
+                "description": "Rahu Kaal (time range). Free text as entered by the author, in the language of the file."
+              },
+              "yamaganda": {
+                "type": "string",
+                "description": "Yamaganda Kaal (time range). Free text as entered by the author, in the language of the file."
+              },
+              "gulika_kaal": {
+                "type": "string",
+                "description": "Gulika Kaal (time range). Free text as entered by the author, in the language of the file."
+              },
+              "sunrise": {
+                "type": "string",
+                "description": "Sunrise time. Free text as entered by the author, in the language of the file."
+              },
+              "sunset": {
+                "type": "string",
+                "description": "Sunset time. Free text as entered by the author, in the language of the file."
+              }
+            }
+          },
+          "extra": {
+            "type": "array",
+            "description": "Additional author-defined items (for example bhadra, panchak, moonrise). Keys can vary by day.",
+            "items": {
+              "type": "object",
+              "required": [
+                "key",
+                "label",
+                "value"
+              ],
+              "properties": {
+                "key": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "ai": {
+            "type": "boolean",
+            "description": "true when the entry was drafted with AI help."
+          }
+        }
+      },
+      "RashifalData": {
+        "type": "object",
+        "properties": {
+          "assisted": {
+            "type": "boolean",
+            "description": "true when the readings were drafted with AI help (then human-reviewed)."
+          },
+          "signs": {
+            "type": "array",
+            "description": "The 12 rashis, in the traditional order.",
+            "items": {
+              "type": "object",
+              "required": [
+                "key",
+                "name",
+                "text",
+                "ai"
+              ],
+              "properties": {
+                "key": {
+                  "type": "string",
+                  "enum": [
+                    "aries",
+                    "taurus",
+                    "gemini",
+                    "cancer",
+                    "leo",
+                    "virgo",
+                    "libra",
+                    "scorpio",
+                    "sagittarius",
+                    "capricorn",
+                    "aquarius",
+                    "pisces"
+                  ]
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Rashi name in the language of the file."
+                },
+                "text": {
+                  "type": "string"
+                },
+                "ai": {
+                  "type": "boolean"
+                }
+              }
+            }
+          },
+          "methodology_url": {
+            "type": "string",
+            "format": "uri"
+          }
+        }
+      },
+      "PanchangFile": {
+        "type": "object",
+        "required": [
+          "version",
+          "widget",
+          "date",
+          "lang",
+          "status",
+          "data",
+          "source",
+          "source_url",
+          "license",
+          "attribution_html",
+          "terms"
+        ],
+        "properties": {
+          "version": {
+            "type": "string",
+            "const": "v1"
+          },
+          "widget": {
+            "type": "string",
+            "const": "panchang"
+          },
+          "date": {
+            "type": "string",
+            "format": "date",
+            "description": "The IST day the entry is for."
+          },
+          "lang": {
+            "type": "string",
+            "enum": [
+              "en",
+              "hi"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "published",
+              "pending"
+            ],
+            "description": "\"pending\": the author has not submitted the entry for this day yet; data is null. Show nothing or \"coming soon\"."
+          },
+          "updated": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "When the entry was last saved (UTC). null while pending."
+          },
+          "expires": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "Today files only: the next IST midnight (UTC). null in dated files."
+          },
+          "data": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/PanchangData"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "credit": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Credit"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "source": {
+            "type": "string",
+            "const": "MathuraNow"
+          },
+          "source_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "license": {
+            "type": "string",
+            "const": "CC BY-NC 4.0"
+          },
+          "attribution_html": {
+            "type": "string",
+            "description": "A ready credit line (HTML) to show wherever the data appears."
+          },
+          "terms": {
+            "type": "string"
+          }
+        }
+      },
+      "RashifalFile": {
+        "type": "object",
+        "required": [
+          "version",
+          "widget",
+          "date",
+          "lang",
+          "status",
+          "data",
+          "source",
+          "source_url",
+          "license",
+          "attribution_html",
+          "terms"
+        ],
+        "properties": {
+          "version": {
+            "type": "string",
+            "const": "v1"
+          },
+          "widget": {
+            "type": "string",
+            "const": "rashifal"
+          },
+          "date": {
+            "type": "string",
+            "format": "date",
+            "description": "The IST day the entry is for."
+          },
+          "lang": {
+            "type": "string",
+            "enum": [
+              "en",
+              "hi"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "published",
+              "pending"
+            ],
+            "description": "\"pending\": the author has not submitted the entry for this day yet; data is null. Show nothing or \"coming soon\"."
+          },
+          "updated": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "When the entry was last saved (UTC). null while pending."
+          },
+          "expires": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "Today files only: the next IST midnight (UTC). null in dated files."
+          },
+          "data": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/RashifalData"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "credit": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Credit"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "source": {
+            "type": "string",
+            "const": "MathuraNow"
+          },
+          "source_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "license": {
+            "type": "string",
+            "const": "CC BY-NC 4.0"
+          },
+          "attribution_html": {
+            "type": "string",
+            "description": "A ready credit line (HTML) to show wherever the data appears."
+          },
+          "terms": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string",
+            "description": "Disclosure to show with the Rashifal, for example \"AI-assisted, human-reviewed. For faith and entertainment.\""
+          }
+        }
+      }
+    }
+  }
+}
